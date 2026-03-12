@@ -1,0 +1,29 @@
+[project]
+name = "gait-segmentation-classifier"
+version = "0.1.0"
+description = "Gait phase segmentation and clinical metric computation for knee rehabilitation"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pyyaml>=6.0",
+    "onnx>=1.14",
+    "onnxruntime>=1.15",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "matplotlib>=3.7",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["gait_classifier*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
