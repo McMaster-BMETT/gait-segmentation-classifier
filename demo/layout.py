@@ -2,7 +2,7 @@
 
 from dash import html, dcc
 
-from .constants import STAGE_DISPLAY, STAGE_ORDER, METRIC_DEFS, METRIC_ORDER
+from .constants import STAGE_DISPLAY, STAGE_ORDER, METRIC_DEFS, METRIC_ORDER, PHASE_COLORS
 
 
 def build_layout(demo_data):
@@ -54,6 +54,23 @@ def build_layout(demo_data):
             # Signal chart
             html.Div(className="chart-card", children=[
                 dcc.Graph(id="signal-chart", config={"displayModeBar": False}),
+                # Phase legend
+                html.Div(className="phase-legend", children=[
+                    html.Span(children=[
+                        html.Span(className="phase-swatch",
+                                  style={"background": color}),
+                        html.Span(f"{abbrev} — {name}",
+                                  style={"color": "#6B7280", "fontSize": "12px"}),
+                    ], className="phase-legend-item")
+                    for abbrev, name, color in [
+                        ("IC", "Initial Contact", PHASE_COLORS[0]),
+                        ("LR", "Loading Response", PHASE_COLORS[1]),
+                        ("MSt", "Mid Stance", PHASE_COLORS[2]),
+                        ("TSt", "Terminal Stance", PHASE_COLORS[3]),
+                        ("ISw", "Initial Swing", PHASE_COLORS[4]),
+                        ("TSw", "Terminal Swing", PHASE_COLORS[5]),
+                    ]
+                ]),
             ]),
         ]),
 
@@ -71,11 +88,17 @@ def build_layout(demo_data):
             ]),
         ]),
 
-        # ── Section 4: Recovery Progression ──────────────
+        # ── Section 4: Recovery Progression (one chart per metric) ──
         html.Div(className="section", children=[
             html.H2("Recovery Progression", className="section-title"),
-            html.Div(className="chart-card", children=[
-                dcc.Graph(id="progression-chart", config={"displayModeBar": False}),
+            html.Div(className="progression-grid", children=[
+                html.Div(className="chart-card", children=[
+                    dcc.Graph(
+                        id=f"progression-{key}",
+                        config={"displayModeBar": False},
+                    ),
+                ])
+                for key in METRIC_ORDER
             ]),
         ]),
 

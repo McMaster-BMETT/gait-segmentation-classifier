@@ -165,6 +165,41 @@ body {
 .metric-dot.amber  { background: #D97706; }
 .metric-dot.red    { background: #DC2626; }
 
+/* ── Phase legend ─────────────────────────────────────── */
+.phase-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px 0 0;
+    justify-content: center;
+}
+
+.phase-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.phase-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+}
+
+/* ── Progression grid (2×2) ────────────────────────────── */
+.progression-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 900px) {
+    .progression-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ── Charts ───────────────────────────────────────────── */
 .chart-card {
     background: #FFFFFF;

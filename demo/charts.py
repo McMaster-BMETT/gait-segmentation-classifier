@@ -107,33 +107,54 @@ def build_signal_figure(stage_data, phase_names):
     return fig
 
 
+_PHASE_ABBREV = ["IC", "LR", "MSt", "TSt", "ISw", "TSw"]
+
+
 def _add_phase_bands(fig, t, labels, phase_names, row):
-    """Add colored vertical bands for each predicted gait phase."""
+    """Add colored vertical bands for each predicted gait phase.
+
+    Labels are shown only on the widest occurrence of each phase to avoid
+    crowding.  Uses short abbreviations (IC, LR, MSt, etc.).
+    """
     n = len(labels)
+
+    # First pass: find the widest segment for each phase
+    segments = []  # (phase, start_idx, end_idx)
     i = 0
-    added_phases = set()
     while i < n:
         phase = int(labels[i])
         j = i
         while j < n and int(labels[j]) == phase:
             j += 1
-        show = phase not in added_phases
-        added_phases.add(phase)
+        segments.append((phase, i, j))
+        i = j
+
+    # Track widest segment per phase for labelling
+    widest = {}  # phase → (width, seg_index)
+    for idx, (phase, si, ei) in enumerate(segments):
+        w = ei - si
+        if phase not in widest or w > widest[phase][0]:
+            widest[phase] = (w, idx)
+
+    # Second pass: draw bands and labels
+    for idx, (phase, si, ei) in enumerate(segments):
         fig.add_vrect(
-            x0=t[i], x1=t[min(j, n) - 1],
+            x0=t[si], x1=t[min(ei, n) - 1],
             fillcolor=PHASE_COLORS[phase % len(PHASE_COLORS)],
             opacity=0.12, line_width=0,
             row=row, col=1,
         )
-        if show and (j - i) > 3:
-            mid = (t[i] + t[min(j, n) - 1]) / 2
+        # Only label the widest occurrence of each phase
+        if widest.get(phase, (0, -1))[1] == idx and (ei - si) > 3:
+            mid = (t[si] + t[min(ei, n) - 1]) / 2
+            abbrev = _PHASE_ABBREV[phase] if phase < len(_PHASE_ABBREV) else ""
             fig.add_annotation(
                 x=mid, y=1.0, yref=f"y{row} domain" if row > 1 else "y domain",
-                text=phase_names[phase] if phase < len(phase_names) else "",
-                showarrow=False, font=dict(size=9, color=PHASE_COLORS[phase % len(PHASE_COLORS)]),
+                text=abbrev,
+                showarrow=False,
+                font=dict(size=10, color=PHASE_COLORS[phase % len(PHASE_COLORS)]),
                 yshift=10, row=row, col=1,
             )
-        i = j
 
 
 def _add_label_strip(fig, t, labels, y_offset, label, phase_names, row):
@@ -226,18 +247,17 @@ def build_radar_chart(metrics, stage_name):
     return fig
 
 
-def build_progression_chart(all_stages_data):
-    """Build a line chart showing metric progression across healing stages.
+def build_progression_charts(all_stages_data):
+    """Build 4 individual line charts, one per clinical metric.
 
     Args:
         all_stages_data: dict[stage_name] → dict with "metrics" key
 
     Returns:
-        plotly.graph_objects.Figure
+        dict[metric_key] → plotly.graph_objects.Figure
     """
-    fig = go.Figure()
-
     x_labels = [STAGE_DISPLAY.get(s, s) for s in STAGE_ORDER]
+    figures = {}
 
     for key in METRIC_ORDER:
         mdef = METRIC_DEFS[key]
@@ -247,27 +267,44 @@ def build_progression_chart(all_stages_data):
             val = sdata["metrics"].get(key) if sdata else None
             y_vals.append(val)
 
+        fig = go.Figure()
         fig.add_trace(go.Scatter(
             x=x_labels,
             y=y_vals,
             mode="lines+markers",
             name=mdef["short"],
             line=dict(color=METRIC_LINE_COLORS[key], width=2.5),
-            marker=dict(size=7),
+            marker=dict(size=8),
             connectgaps=True,
+            fill="tozeroy",
+            fillcolor=METRIC_LINE_COLORS[key].replace(")", ", 0.06)").replace("rgb", "rgba")
+                       if METRIC_LINE_COLORS[key].startswith("rgb") else None,
         ))
 
-    fig.update_layout(
-        **_PLOTLY_LAYOUT,
-        height=380,
-        legend=dict(
-            orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0,
-            font=dict(size=12),
-        ),
-        xaxis=dict(gridcolor=GRID_COLOR, tickfont=dict(size=13, color=TEXT_PRIMARY)),
-        yaxis=dict(gridcolor=GRID_COLOR, zeroline=False, tickfont=dict(size=11, color=TEXT_SECONDARY)),
-    )
-    fig.update_xaxes(title_text="Recovery Stage")
-    fig.update_yaxes(title_text="Metric Value")
+        # Add target line where applicable
+        good_lo, good_hi = mdef["good_range"]
+        target_val = good_hi if good_lo is None else good_lo
+        if target_val is not None:
+            fig.add_hline(
+                y=target_val, line_dash="dot",
+                line_color="#9CA3AF", line_width=1,
+                annotation_text=f"Target: {mdef['target']}",
+                annotation_font=dict(size=11, color="#9CA3AF"),
+                annotation_position="top right",
+            )
 
-    return fig
+        unit = f" ({mdef['unit']})" if mdef["unit"] else ""
+        fig.update_layout(
+            **_PLOTLY_LAYOUT,
+            height=260,
+            showlegend=False,
+            xaxis=dict(gridcolor=GRID_COLOR, tickfont=dict(size=12, color=TEXT_PRIMARY)),
+            yaxis=dict(
+                gridcolor=GRID_COLOR, zeroline=False,
+                tickfont=dict(size=11, color=TEXT_SECONDARY),
+                title=dict(text=f"{mdef['short']}{unit}", font=dict(size=12, color=TEXT_SECONDARY)),
+            ),
+        )
+        figures[key] = fig
+
+    return figures

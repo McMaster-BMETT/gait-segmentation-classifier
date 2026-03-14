@@ -16,8 +16,9 @@ from dash import Dash, Input, Output
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from demo.layout import build_layout
-from demo.charts import build_progression_chart
+from demo.charts import build_progression_charts
 from demo.callbacks import register_callbacks
+from demo.constants import METRIC_ORDER
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "demo_data.json")
 
@@ -38,13 +39,14 @@ def create_app():
     # Register interactive callbacks
     register_callbacks(app, demo_data)
 
-    # Pre-build the progression chart (static, not stage-dependent)
+    # Pre-build the 4 progression charts (static, not stage-dependent)
     @app.callback(
-        Output("progression-chart", "figure"),
+        [Output(f"progression-{key}", "figure") for key in METRIC_ORDER],
         Input("selected-stage", "data"),
     )
     def update_progression(_):
-        return build_progression_chart(demo_data["stages"])
+        figs = build_progression_charts(demo_data["stages"])
+        return [figs[key] for key in METRIC_ORDER]
 
     return app
 
