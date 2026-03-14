@@ -1,0 +1,234 @@
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Reset & base */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #FAFAF9;
+    color: #1A1A1A;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Main container */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ── Section 1: Hero ──────────────────────────────────── */
+.hero-section {
+    padding: 56px 0 40px;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 36px;
+    font-weight: 300;
+    color: #1A1A1A;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.hero-subtitle {
+    font-size: 16px;
+    font-weight: 400;
+    color: #6B7280;
+    margin-bottom: 24px;
+}
+
+.hero-badges {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6B7280;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+}
+
+/* ── Section 2: Signal viewer ─────────────────────────── */
+.section {
+    padding: 48px 0;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 300;
+    color: #1A1A1A;
+    margin-bottom: 24px;
+    letter-spacing: -0.3px;
+}
+
+/* Stage selector pills */
+.stage-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.stage-btn {
+    padding: 10px 22px;
+    border-radius: 24px;
+    border: 1.5px solid #E5E7EB;
+    background: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.stage-btn:hover {
+    border-color: #2563EB;
+    color: #2563EB;
+}
+
+.stage-btn.active {
+    background: #2563EB;
+    border-color: #2563EB;
+    color: #FFFFFF;
+}
+
+/* ── Section 3: Metric cards ──────────────────────────── */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+@media (max-width: 900px) {
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.metric-card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 28px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: relative;
+}
+
+.metric-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6B7280;
+    margin-bottom: 8px;
+}
+
+.metric-value {
+    font-size: 48px;
+    font-weight: 600;
+    color: #1A1A1A;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.metric-target {
+    font-size: 13px;
+    font-weight: 400;
+    color: #9CA3AF;
+}
+
+.metric-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: absolute;
+    top: 24px;
+    right: 24px;
+}
+
+.metric-dot.green  { background: #059669; }
+.metric-dot.amber  { background: #D97706; }
+.metric-dot.red    { background: #DC2626; }
+
+/* ── Charts ───────────────────────────────────────────── */
+.chart-card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 32px;
+}
+
+/* ── Section 5: Model info footer ─────────────────────── */
+.model-footer {
+    padding: 48px 0 64px;
+    border-top: 1px solid #F3F4F6;
+    margin-top: 16px;
+}
+
+.model-footer .section-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.model-arch {
+    font-size: 15px;
+    font-weight: 400;
+    color: #6B7280;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1A1A1A;
+}
+
+.stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #9CA3AF;
+    margin-top: 4px;
+}
+
+/* ── Plotly overrides ─────────────────────────────────── */
+.js-plotly-plot .plotly .modebar {
+    display: none !important;
+}
+
+/* Remove Dash default margins */
+._dash-loading { display: none; }
