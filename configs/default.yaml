@@ -1,0 +1,50 @@
+# Gait Segmentation Classifier - Default Configuration
+
+sensor:
+  sampling_rate: 50  # Hz (firmware delay(20) → ~50 Hz target)
+  channels:
+    - imu_roll
+    - imu_pitch
+    - imu_yaw
+    - mag_x
+    - mag_y
+    - mag_z
+    - emg_quad
+    - emg_ham
+  num_channels: 8
+
+data:
+  cycles_per_stage: 200
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  output_dir: data/synthetic
+
+preprocessing:
+  normalize: zscore  # per-channel z-score from training set
+  angular_velocity: true  # compute derivative of imu_yaw
+  emg_rms_window: 5  # samples for EMG RMS envelope
+
+model:
+  type: bidirectional_tcn
+  num_channels: 8
+  hidden_channels: 64
+  num_classes: 6
+  num_blocks: 4
+  kernel_size: 3
+  dilations: [1, 2, 4, 8]
+  dropout: 0.2
+
+training:
+  epochs: 100
+  batch_size: 64
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-4
+  scheduler: cosine
+  early_stopping_patience: 15
+  label_smoothing: 0.05
+
+augmentation:
+  time_warp_range: 0.1  # ±10%
+  gaussian_noise_std: 0.02
+  emg_amplitude_scale_range: [0.8, 1.2]
