@@ -2,7 +2,7 @@
 
 A deep learning pipeline for segmenting and classifying gait phases from wearable sensor data, built for knee rehabilitation monitoring. The system classifies 8-channel sensor streams (IMU, magnetometer, EMG) into 6 gait phases in real time using a Bidirectional Temporal Convolutional Network (BiTCN).
 
-Developed as part of a McMaster BMETT capstone project.
+Developed as part of the McMaster BMETT Truw North Competition 2025-26 project.
 
 ## Overview
 
@@ -201,7 +201,3 @@ All hyperparameters are controlled via `configs/default.yaml`:
 | `training.learning_rate` | 1e-3 | Initial learning rate |
 | `augmentation.time_warp_range` | 0.1 | Time warping +/-10% |
 | `augmentation.gaussian_noise_std` | 0.02 | Gaussian noise std dev |
-
-## License
-
-McMaster BMETT 2025--26 Capstone Project.
